@@ -1,3 +1,8 @@
+/*
+AUTHORS: Levana Sciari,Mayanne zeevi, Lior Samuel-Levy 
+
+*/
+
 #include <iostream>
 #include <string>
 

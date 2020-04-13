@@ -1,3 +1,8 @@
+/*
+AUTHORS: Levana Sciari,Mayanne zeevi, Lior Samuel-Levy 
+
+*/ 
+
 #include <iostream>
 #include <string>
 #include <stdexcept>
@@ -6,7 +11,7 @@
 using namespace std;
 using namespace family;
 
-        Tree::Tree(string text){
+        Tree::Tree(string text){ //constructor - the young!
 
         }
         Tree& Tree::addFather(string son, string f){

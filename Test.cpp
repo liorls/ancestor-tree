@@ -1,3 +1,8 @@
+/*
+AUTHORS: Levana Sciari,Mayanne zeevi, Lior Samuel-Levy 
+
+*/
+
 #include "doctest.h"
 #include <string.h>
 #include "FamilyTree.hpp"
@@ -130,9 +135,12 @@ TEST_CASE("Test"){
 
 TEST_CASE("Test some fathers or some mothers exceptions"){
     Tree T("Dana");
+    T.addFather("Dana", "avi")
+    .addFather("Dana", "haim");
+    CHECK_THROWS(T.addFather("Dana","haim"));
     CHECK_THROWS(T.addFather("Dana","David").addFather("Dana","Shlomo"));
     CHECK_THROWS(T.addMother("Dana","Rachel").addMother("Dana","leh"));
-}//2
+}//3
 
 
 TEST_CASE("Find Test Exception Message"){
@@ -154,150 +162,158 @@ TEST_CASE("Find Test Exception Message"){
 
 
 
-
-
-
-
-TEST_CASE("Test"){
-	Tree T("Erez");
-	T.addFather("Erez", "Aharon"); 
-	T.addMother("Erez", "Sigalit");
-	CHECK(T.relation("Aharon") == "father");
-	CHECK(T.relation("Sigalit") == "mother");
-	CHECK(T.find("father") == "Aharon");
-	CHECK(T.find("mother") == "Sigalit");
+void BuildTree(Tree T){
+    T.addFather("Yosef", "Yaakov")   // Tells the tree that the father of Yosef is Yaakov.
+     .addMother("Yosef", "Rachel")   // Tells the tree that the mother of Yosef is Rachel.
+     .addFather("Rachel", "Lavan")
+     .addMother("Rachel", "Mom")
+     .addFather("Lavan", "Sahor")
+     .addMother("Lavan", "Levana")
+     .addMother("Mom", "Motek")
+            .addFather("Mom", "Potek")
+            .addFather("Yaakov", "Isaac")
+            .addMother("Yaakov", "Rivka")
+            .addFather("Rivka", "Betoel")
+            .addMother("Rivka", "Tova")
+            .addFather("Isaac", "Avraham")
+            .addMother("Isaac", "Sarah")
+            .addFather("Avraham", "Terah")
+            .addMother("Avraham", "Ela")
+            .addFather("Sarah", "Shalom")
+            .addMother("Sarah", "Milka")
+            .addMother("Milka", "Hava")
+            .addFather("Milka", "Adam")
+            .addFather("Terah", "Nahor")
+            .addMother("Terah", "Rot");
 }
-
-TEST_CASE("Test"){
-	Tree T("Boaz");
-	T.addFather("Boaz", "Aharon");
-	T.addMother("Boaz", "Sigalit");
-	T.addFather("Aharon","Shlomo");
-	T.addMother("Aharon","Yona");
-	CHECK(T.relation("Aharon") == "father");
-	CHECK(T.relation("Sigalit") == "mother");
-	CHECK(T.relation("Yona") == "grandmother");
-	CHECK(T.relation("Shlomo") == "grandfather");
-	CHECK(T.find("father") == "Aharon");
-	CHECK(T.find("mother") == "Aharon");
+TEST_CASE("check addFather function"){
+    Tree T("Yosef");
+    BuildTree(T);
+    CHECK(T.relation("Yaakov")== string("father"));
+    CHECK(T.relation("Isaac")== string("grandfather"));
+    CHECK(T.relation("Lavan")== string("grandfather"));
+    CHECK(T.relation("Sahor")== string("great-grandfather"));
+    CHECK(T.relation("Betoel")== string("great-grandfather"));
+    CHECK(T.relation("Potek")== string("great-grandfather"));
+    CHECK(T.relation("Avraham")== string("great-grandfather"));
+    CHECK(T.relation("Terah")== string("great-great-grandfather"));
+    CHECK(T.relation("Shalom")== string("great-great-grandfather"));
+    CHECK(T.relation("Nahor")== string("great-great-great-grandfather"));
+    CHECK(T.relation("Adam")== string("great-great-great-grandfather"));
+    CHECK(T.relation("Aba")== string("unrelated"));
+    CHECK(T.relation("yza")== string("unrelated"));
 }
-
-
-TEST_CASE("Test"){
-	Tree T("Shlomi");
-	T.addFather("Shlomi", "Aharon");
-	T.addMother("Shlomi", "Sigalit");
-	T.addFather("Aharon","Shlomo");
-	T.addMother("Aharon","Yona");
-	T.addFather("Sigalit","Boaz");
-	T.addMother("Sigalit","Mazal");
-	CHECK(T.relation("Aharon") == "father");
-	CHECK(T.relation("Sigalit") == "mother");
-	CHECK(T.relation("Yona") == "grandmother");
-	CHECK(T.relation("Boaz") == "grandfather");
-        CHECK(T.relation("Mazal") == "grandmother");
-	CHECK(T.relation("Shlomo") == "grandfather");
-	CHECK(T.find("father") == "Aharon");
-	CHECK(T.find("mother") == "Sigalit");
+//13
+TEST_CASE("check addMother function"){
+    Tree T("Yosef");
+    BuildTree(T);
+    CHECK(T.relation("Rachel")== string("mother"));
+    CHECK(T.relation("Mom")== string("grandmother"));
+    CHECK(T.relation("Rivka")== string("grandmother"));
+    CHECK(T.relation("Tova")== string("great-grandMother"));
+    CHECK(T.relation("Sarah")== string("great-grandMother"));
+    CHECK(T.relation("Motek")== string("great-grandMother"));
+    CHECK(T.relation("Levana")== string("great-grandMother"));
+    CHECK(T.relation("Milka")== string("great-great-grandmother"));
+    CHECK(T.relation("Ela")== string("great-great-grandmother"));
+    CHECK(T.relation("Hava")== string("great-great-great-grandmother"));
+    CHECK(T.relation("Rot")== string("great-great-great-grandmother"));
+    CHECK(T.relation("Aba")== string("unrelated"));
+    CHECK(T.relation("yza")== string("unrelated"));
+    CHECK(T.relation("Maayan")== string("unrelated"));
+    CHECK(T.relation("ava")== string("unrelated"));
 }
-
-
-TEST_CASE("Test"){
-	Tree T("Ruth");
-	T.addFather("Ruth", "Aharon");
-	T.addMother("Ruth", "Sigalit");
-	T.addFather("Aharon","Shlomo");
-	T.addMother("Aharon","Yona");
-	T.addFather("Sigalit","Boaz");
-	T.addMother("Sigalit","Mazal");
-	CHECK(T.find("father") == "Aharon");
-	CHECK(T.find("mother") == "Sigalit");
-	CHECK(T.relation("Aharon") == "father");
-	CHECK(T.relation("Sigalit") == "mother");
-	CHECK(T.relation("Yona") == "grandmother");
-	CHECK(T.relation("Boaz") == "grandfather");
-        CHECK(T.relation("Mazal") == "grandmother");
-	CHECK(T.relation("Shlomo") == "grandfather");
-	T.remove("Aharon");
-	CHECK(T.find("father") == "unrelated");
-	T.addFather("Ruth", "Aharon");
-	CHECK(T.relation("Aharon") == "father");
+//15
+TEST_CASE("check relation function"){
+    Tree T("Yosef");
+    BuildTree(T);
+    CHECK(T.relation("Rachel")== string("mother"));
+    CHECK(T.relation("Rivka")== string("grandmother"));
+    CHECK(T.relation("Mom")== string("grandmother"));
+    CHECK(T.relation("Levana")== string("great-grandMother"));
+    CHECK(T.relation("Motek")== string("great-grandMother"));
+    CHECK(T.relation("Sarah")== string("great-grandMother"));
+    CHECK(T.relation("Tova")== string("great-grandMother"));
+    CHECK(T.relation("Milka")== string("great-great-grandmother"));
+    CHECK(T.relation("Ela")== string("great-great-grandmother"));
+    CHECK(T.relation("Hava")== string("great-great-great-grandmother"));
+    CHECK(T.relation("Yaakov")== string("father"));
+    CHECK(T.relation("Isaac")== string("grandfather"));
+    CHECK(T.relation("Lavan")== string("grandfather"));
+    CHECK(T.relation("Avraham")== string("great-grandfather"));
+    CHECK(T.relation("Betoel")== string("great-grandfather"));
+    CHECK(T.relation("Terah")== string("great-great-grandfather"));
+    CHECK(T.relation("Shalom")== string("great-great-grandfather"));
+    CHECK(T.relation("Nahor")== string("great-great-great-grandfather"));
+    CHECK(T.relation("Adam")== string("great-great-great-grandfather"));
+    CHECK(T.relation("Yosef")== string("me"));
+    CHECK(T.relation("Dani")== string("unrelated"));
+    CHECK(T.relation("Moshe")== string("unrelated"));
+    CHECK(T.relation("Esav")== string("unrelated"));
 }
-
-
-
-TEST_CASE("Test"){
-	Tree T("Yonit");
-	T.addFather("Yonit", "Aharon");
-	T.addMother("Yonit", "Sigalit");
-	T.addFather("Aharon","Shlomo");
-	T.addMother("Aharon","Yona");
-	T.addFather("Sigalit","Boaz");
-	T.addMother("Sigalit","Mazal");
-	T.addFather("Shlomo","Yosef");
-	T.addMother("Shlomo","Bracha");
-	CHECK(T.find("father") == "Aharon");
-	CHECK(T.find("mother") == "Sigalit");
-	CHECK(T.relation("Aharon") == "father");
-	CHECK(T.relation("Sigalit") == "mother");
-	CHECK(T.relation("Yona") == "grandmother");
-	CHECK(T.relation("Boaz") == "grandfather");
-        CHECK(T.relation("Mazal") == "grandmother");
-	CHECK(T.relation("Shlomo") == "grandfather");
-	CHECK(T.relation("Yosef") == "great-grandfather");
-	CHECK(T.relation("Bracha") == "great-grandmother");
-	CHECK(T.find("father") == "Aharon");
-	T.remove("Aharon");
-	CHECK(T.find("father") == "unrelated");
-	T.addFather("Ruth", "Aharon");
-	CHECK(T.relation("Aharon") == "father");
+//23
+TEST_CASE("check find function"){
+    Tree T("Yosef");
+    BuildTree(T);
+    CHECK(T.find("mother")== string("Rachel"));
+    CHECK(T.find("father")== string("Yaakov"));
+    CHECK(T.find("grandmother")== string("Rivka") || 
+            T.find("grandmother")== string("Mom"));
+    CHECK(T.find("great-grandmother")== string("Sara") ||
+             T.find("great-grandmother")== string("Tova") || 
+             T.find("great-grandmother")== string("Levana") || 
+             T.find("great-grandmother")== string("Motek"));
+    CHECK(T.find("great-great-grandmother")== string("Milka") ||
+            T.find("great-great-grandmother")== string("Ela"));
+    CHECK(T.find("great-great-great-grandmother")== string("Hava") || 
+            T.find("great-great-great-grandmother")== string("Rot"));
+    CHECK(T.find("grandfather")== string("Isaac") || 
+            T.find("grandfather")== string("Lavan"));
+    CHECK(T.find("great-grandfather")== string("Avraham") || 
+            T.find("great-grandfather")== string("Betoel")|| 
+            T.find("great-grandfather")== string("Sahor") || 
+            T.find("great-grandfather")== string("Potek"));
+    CHECK(T.find("great-great-grandfather")== string("Terah") || 
+            T.find("great-great-grandfather")== string("Shalom"));
+    CHECK(T.find("great-great-great-grandfather")== string("Nahor") || 
+            T.find("great-great-great-grandfather")== string("Adam"));
+    CHECK_THROWS(T.find("great-great-great-great-grandfather"));
+    CHECK_THROWS(T.find("uncle"));
+    CHECK_THROWS(T.find("saba"));
+    CHECK_THROWS(T.find("aba"));
+    CHECK_THROWS(T.find("xyz"));
+    CHECK_THROWS(T.find("aakov"));
+    CHECK_THROWS(T.find("Maayan"));
+    CHECK_THROWS(T.find("Eyal"));
 }
-
-
-TEST_CASE("Test"){
-    Tree T ("Ella");
-
-	T.addMother("Ella", "Harper") 
-	 .addMother("Harper", "Avery") 
-	 .addMother("Avery", "Madison")
-	 .addMother("Madison", "Lily")
-	 .addMother("Lily", "Lillian")
-	 .addMother("Lillian", "Aubrey")
-	 .addFather("Ella", "Carter")
-	 .addFather("Carter", "Wyatt")
-	 .addFather("Wyatt", "Jack")
-	 .addFather("Jack", "Julian")
-	 .addFather("Julian", "Jaxon")
-	 .addFather("Jaxon", "Austin");
-	CHECK(T.relation("Ella") == "me");
-	CHECK(T.relation("Harper") == "mother");
-	CHECK(T.relation("Avery") == "grandmother");
-	CHECK(T.relation("Madison") == "great-grandmother");
-	CHECK(T.relation("Lily") == "great-great-grandmother");
-	CHECK(T.relation("Lillian") == "great-great-great-grandmother");
-	CHECK(T.relation("Carter") == "father");
-	CHECK(T.relation("Wyatt") == "grandfather");
-	CHECK(T.relation("Jack") == "great-grandfather");
-	CHECK(T.relation("Julian") == "great-great-grandfather");
-	CHECK(T.relation("Jaxon") == "great-great-great-grandfather");
-	CHECK(T.relation("Austin") == "great-great-great-great-grandfather");
-	CHECK(T.relation("Terahby") == "unrelated");
-	CHECK(T.relation("Yosef") == "unrelated");
-	CHECK(T.find("me") == "Ella");
-	CHECK(T.find("mother") == "Harper");
-	CHECK(T.find("grandmother") == "Avery");
-	CHECK(T.find("great-grandmother") == "Madison");
-	CHECK(T.find("great-great-grandmother") == "Lily");
-	CHECK(T.find("great-great-great-grandmother") == "Lillian");
-	CHECK(T.find("father") == "Carter");
-	CHECK(T.find("grandfather") == "Wyatt");
-	CHECK(T.find("great-grandfather") == "Jack");
-	CHECK(T.find("great-great-grandfather") == "Julian");
-	CHECK(T.find("great-great-great-great-grandfather") == "Julian");
-	CHECK(T.find("mother") == "Austin");
-	CHECK(T.find("great-great-great-grandfather") == "Jaxon");
-	CHECK(T.find("mother") == "Rachel");
-
+//18
+TEST_CASE("remove function"){
+    Tree T("Yosef");
+    BuildTree(T);
+    T.remove("Yaacov");
+    CHECK(T.relation("Yaacov") == string("unrelated"));
+    CHECK(T.relation("Isaac") == string("unrelated"));
+    CHECK(T.relation("Rivka") == string("unrelated"));
+    CHECK(T.relation("Avraham") == string("unrelated"));
+    CHECK(T.relation("Sarah") == string("unrelated"));
+    CHECK(T.relation("Betoel") == string("unrelated"));
+    CHECK(T.relation("Tova") == string("unrelated"));
+    CHECK(T.relation("Terah") == string("unrelated"));
+    CHECK(T.relation("Ela") == string("unrelated"));
+    CHECK(T.relation("Shalom") == string("unrelated"));
+    CHECK(T.relation("Milka") == string("unrelated"));
+    CHECK(T.relation("Hava") == string("unrelated"));
+    CHECK(T.relation("Adam") == string("unrelated"));
+    CHECK(T.relation("Rot") == string("unrelated"));
+    CHECK(T.relation("Nahor") == string("unrelated"));
+    
+    T.remove("Rachel");
+    CHECK(T.relation("Rachel") == string("unrelated"));
+    CHECK(T.relation("Lavan") == string("unrelated"));
+    CHECK(T.relation("Mom") == string("unrelated"));
+    CHECK(T.relation("Sahor") == string("unrelated"));
+    CHECK(T.relation("Levana") == string("unrelated"));
+    CHECK(T.relation("Motek") == string("unrelated"));
+    CHECK(T.relation("Potek") == string("unrelated"));
 }
-
-
+//22
